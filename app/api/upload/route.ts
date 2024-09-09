@@ -5,6 +5,7 @@ export async function POST(req: Request) {
   try {
     const formData = await req.formData();
     const file: any = formData.get("file"); // or what you need
+    const workflow: any = formData.get("workflowName");
     // const buffer = Buffer.from(await file.arrayBuffer());
 
     var loginOptions = {
@@ -51,7 +52,7 @@ export async function POST(req: Request) {
         // filepath: "",
         // user_agent: "",
         // rule: "MetaDefender Vault",
-        workflow: "Kiosk",
+        workflow: workflow,
         // batch: "",
         // archivepwd: "echo",
         // metadata: "",

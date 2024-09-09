@@ -4,7 +4,7 @@ import React, { useState } from "react";
 const FileUpload = () => {
   const [file, setFile]: any = useState(null);
   const [fileName, setFileName] = useState("Choose File");
-
+  const [policyName, setPolicyName] = useState("");
   const onFileChange = (e: any) => {
     setFile(e.target.files[0]);
     setFileName(e.target.files[0].name);
@@ -15,12 +15,17 @@ const FileUpload = () => {
       alert("No file found");
       return;
     }
+    if (policyName == "") {
+      alert("Please enter your workflow name");
+      return;
+    }
     try {
       var headers = new Headers();
       // headers.append("Accept ", "application/json");
       headers.append("Content-Type", "application/json");
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("workflowName", policyName);
       const data = await fetch("/api/upload", {
         method: "POST",
         body: formData,
@@ -34,6 +39,13 @@ const FileUpload = () => {
 
   return (
     <form onSubmit={onSubmit}>
+      <div className="custom-file mb-4">
+        <input
+          type="text"
+          placeholder="workflow name"
+          onChange={(e) => setPolicyName(e.target.value)}
+        />
+      </div>
       <div className="custom-file mb-4">
         <input
           type="file"
