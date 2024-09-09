@@ -6,34 +6,25 @@ const FileUpload = () => {
   const [fileName, setFileName] = useState("Choose File");
 
   const onFileChange = (e: any) => {
-    
-    console.log(e.target.files[0])
     setFile(e.target.files[0]);
     setFileName(e.target.files[0].name);
   };
-
   const onSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-
-    var headers = new Headers();
-    var options = {
-      method: "GET",
-      headers: headers,
-    };
-
-    // const data = await res.json();
-
-    const formData = new FormData();
-    formData.append("file", file);
+    if (file == null) {
+      alert("No file found");
+      return;
+    }
     try {
       var headers = new Headers();
       // headers.append("Accept ", "application/json");
       headers.append("Content-Type", "application/json");
-      var options = {
-        method: "PUT",
-        headers: headers,
-      };
-
+      const formData = new FormData();
+      formData.append("file", file);
+      const data = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      }).then((res) => res.json());
       alert("File uploaded successfully");
     } catch (err) {
       alert("File upload failed");
