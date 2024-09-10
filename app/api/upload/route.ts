@@ -42,6 +42,8 @@ export async function POST(req: Request) {
     //   ruleOptions
     // );
     // const ruleResult = await ruleResponse.json();
+    const formData2 = new FormData();
+    formData2.append("file", file);
     var uploadOptions: any = {
       method: "POST",
       url: "http://172.16.2.104:8008/file",
@@ -61,7 +63,7 @@ export async function POST(req: Request) {
         // downloadfrom: "{downloadfrom}",
         // "global-timeout": 60,
       },
-      body: file,
+      body: formData2,
       json: true,
     };
     const uploadResponse = await fetch(
