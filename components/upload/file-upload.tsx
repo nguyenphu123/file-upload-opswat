@@ -25,7 +25,7 @@ const FileUpload = () => {
       headers.append("Content-Type", "application/json");
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("workflowName", policyName);
+      formData.append("workflowName", policyName+"");
       const data = await fetch("/api/upload", {
         method: "POST",
         body: formData,
