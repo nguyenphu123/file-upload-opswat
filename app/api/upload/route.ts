@@ -52,7 +52,7 @@ export async function POST(req: Request) {
         // filepath: "",
         // user_agent: "",
         // rule: "MetaDefender Vault",
-        workflow: workflow+" ",
+        workflow: workflow + " ",
         // batch: "",
         // archivepwd: "echo",
         // metadata: "",
