@@ -6,25 +6,7 @@ export async function POST(req: Request) {
     const formData = await req.formData();
     const file: any = formData.get("file"); // or what you need
     const workflow: any = formData.get("workflowName");
-    // const buffer = Buffer.from(await file.arrayBuffer());
-
-    var loginOptions = {
-      method: "POST",
-      url: "http://172.16.2.104:8008/login",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        user: "admin",
-        password: "Admin@123",
-      }),
-      json: true,
-    };
-    const response = await fetch(
-      `http://172.16.2.104:8008/login`,
-      loginOptions
-    );
-    const result = await response.json();
+    const apikey: any = formData.get("apikey");
     // var ruleOptions: any = {
     //   method: "POST",
     //   url: "http://172.16.2.104:8008/file/rules",
@@ -49,7 +31,7 @@ export async function POST(req: Request) {
       url: "http://172.16.2.104:8008/file",
       headers: {
         "Content-Type": "application/octet-stream",
-        apikey: result.session_id,
+        apikey: apikey,
         filename: file.name,
         // filepath: "",
         // user_agent: "",
@@ -71,9 +53,10 @@ export async function POST(req: Request) {
       uploadOptions
     );
     const uploadResult = await uploadResponse.json();
+
     return NextResponse.json(uploadResult);
   } catch (error) {
-    console.log("[COURSES]", error);
+    console.log("[UPLOAD]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

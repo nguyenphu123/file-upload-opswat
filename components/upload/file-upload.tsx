@@ -1,15 +1,68 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const FileUpload = () => {
   const [file, setFile]: any = useState(null);
   const [fileName, setFileName] = useState("Choose File");
   const [policyName, setPolicyName] = useState("");
+  const [apikey, setApikey] = useState("");
+  const [analysisID, setAnalysisID] = useState("");
+  const [uploadingToOpswat, setUploadingToOpswat] = useState(false);
+  const [uploadingToS3, setUploadingToS3] = useState(false);
+  const [scannedFile, setScannedFile]: any = useState(null);
+  const [time, setTime] = useState(1000);
+  const interval = setInterval(() => getStatus(), time);
+
   const onFileChange = (e: any) => {
     setFile(e.target.files[0]);
     setFileName(e.target.files[0].name);
   };
+  const fetchToken = async () => {
+    let data = await fetch("/api/getToken");
+    let returnResult = await data.json();
+    setApikey(returnResult.session_id);
+  };
+  const getStatus = async () => {
+    if (analysisID != "") {
+      const data = await fetch("/api/getStatus", {
+        method: "POST",
+        body: JSON.stringify({
+          analysisID: analysisID,
+          apikey: apikey,
+        }),
+      });
+      let returnResult = await data.json();
+
+      let file_value = {
+        name: returnResult?.file_info?.display_name,
+        type: returnResult?.file_info?.file_type_id,
+        result: returnResult?.result,
+        progress_percentage: returnResult?.process_info?.progress_percentage,
+        scan_result: returnResult?.scan_results?.scan_all_result_a,
+      };
+      setScannedFile(file_value);
+      if (returnResult?.process_info?.progress_percentage == 100) {
+        setAnalysisID("");
+        clearInterval(interval);
+        if (
+          returnResult?.scan_results?.scan_all_result_a ==
+            "No Threat Detected" &&
+          uploadingToS3 == false
+        ) {
+          uploadToS3Bucket();
+        }
+      }
+    }
+  };
+  useEffect(() => {
+    fetchToken();
+  }, []);
+  useEffect(() => {
+    setAnalysisID("");
+    /* it will be called when queues did update */
+  }, [analysisID]);
   const onSubmit = async (e: { preventDefault: () => void }) => {
+    setUploadingToOpswat(true);
     e.preventDefault();
     if (file == null) {
       alert("No file found");
@@ -21,24 +74,68 @@ const FileUpload = () => {
     }
     try {
       var headers = new Headers();
-      // headers.append("Accept ", "application/json");
       headers.append("Content-Type", "application/json");
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("workflowName", policyName+"");
+      formData.append("workflowName", policyName + "");
+
+      formData.append("apikey", apikey + "");
       const data = await fetch("/api/upload", {
         method: "POST",
         body: formData,
-      }).then((res) => res.json());
-      alert("File uploaded successfully");
+      });
+
+      let returnResult = await data.json();
+      setUploadingToOpswat(false);
+      if (returnResult?.err != "" && returnResult?.err != undefined) {
+        alert(returnResult?.err);
+        const data = await fetch("/api/refreshToken", {
+          method: "POST",
+          body: JSON.stringify({
+            apikey: apikey,
+          }),
+        });
+        let returnToken = await data.json();
+        setApikey(returnToken.session_id);
+      } else {
+        setAnalysisID(returnResult.data_id);
+        alert("File uploaded successfully");
+      }
     } catch (err) {
       alert("File upload failed");
       console.log(err);
     }
   };
+  const uploadToS3Bucket = async () => {
+    setUploadingToS3(true);
 
+    if (file == null) {
+      alert("No file found");
+      return;
+    }
+
+    try {
+      var headers = new Headers();
+      headers.append("Content-Type", "application/json");
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const data = await fetch("/api/upload-s3", {
+        method: "POST",
+        body: formData,
+      });
+
+      let returnResult = await data.json();
+      setUploadingToS3(false);
+      alert("File uploaded to s3 successfully");
+    } catch (err) {
+      alert("File upload to s3 failed");
+      console.log(err);
+    }
+  };
   return (
     <form onSubmit={onSubmit}>
+      Your Session Id: {apikey}
       <div className="custom-file mb-4">
         <input
           type="text"
@@ -53,8 +150,22 @@ const FileUpload = () => {
           id="customFile"
           onChange={(e) => onFileChange(e)}
         />
+        {uploadingToOpswat ? <>uploading to OPSWAT for scanning...</> : <></>}
+        {uploadingToS3 ? <>uploading to S3 bucket...</> : <></>}
         <label className="custom-file-label" htmlFor="customFile">
-          {fileName}
+          {scannedFile != null ? (
+            <>
+              <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                <div
+                  className={`bg-blue-600 h-2.5 rounded-full `}
+                  style={{ width: scannedFile.progress_percentage + "%" }}
+                ></div>
+                {scannedFile.progress_percentage}% {scannedFile.scan_result}
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
         </label>
       </div>
       <button type="submit" className="btn btn-primary">
