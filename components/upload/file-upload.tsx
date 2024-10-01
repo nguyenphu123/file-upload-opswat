@@ -11,6 +11,7 @@ const FileUpload = () => {
   const [uploadingToS3, setUploadingToS3] = useState(false);
   const [scannedFile, setScannedFile]: any = useState(null);
   const [time, setTime] = useState(1000);
+  const [mode, setMode] = useState("sync");
   const interval = setInterval(() => getStatus(), time);
 
   const onFileChange = (e: any) => {
@@ -61,7 +62,7 @@ const FileUpload = () => {
     setAnalysisID("");
     /* it will be called when queues did update */
   }, [analysisID]);
-  const onSubmit = async (e: { preventDefault: () => void }) => {
+  const onSubmitAsync = async (e: { preventDefault: () => void }) => {
     setUploadingToOpswat(true);
     e.preventDefault();
     if (file == null) {
@@ -80,7 +81,7 @@ const FileUpload = () => {
       formData.append("workflowName", policyName + "");
 
       formData.append("apikey", apikey + "");
-      const data = await fetch("/api/upload", {
+      const data = await fetch("/api/upload-async", {
         method: "POST",
         body: formData,
       });
@@ -100,6 +101,54 @@ const FileUpload = () => {
       } else {
         setAnalysisID(returnResult.data_id);
         alert("File uploaded successfully");
+      }
+    } catch (err) {
+      alert("File upload failed");
+      console.log(err);
+    }
+  };
+  const onSubmitSync = async (e: { preventDefault: () => void }) => {
+    setUploadingToOpswat(true);
+    e.preventDefault();
+    if (file == null) {
+      alert("No file found");
+      return;
+    }
+    if (policyName == "") {
+      alert("Please enter your workflow name");
+      return;
+    }
+    try {
+      var headers = new Headers();
+      headers.append("Content-Type", "application/json");
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("workflowName", policyName + "");
+
+      formData.append("apikey", apikey + "");
+      const data = await fetch("/api/upload-sync", {
+        method: "POST",
+        body: formData,
+      });
+
+      let returnResult = await data.json();
+      setUploadingToOpswat(false);
+      if (returnResult?.err != "" && returnResult?.err != undefined) {
+        alert(returnResult?.err);
+        const data = await fetch("/api/refreshToken", {
+          method: "POST",
+          body: JSON.stringify({
+            apikey: apikey,
+          }),
+        });
+        let returnToken = await data.json();
+        setApikey(returnToken.session_id);
+      } else {
+        if (
+          returnResult?.scan_results?.scan_all_result_a == "No Threat Detected"
+        ) {
+          uploadToS3Bucket();
+        }
       }
     } catch (err) {
       alert("File upload failed");
@@ -127,51 +176,60 @@ const FileUpload = () => {
 
       let returnResult = await data.json();
       setUploadingToS3(false);
-      alert("File uploaded to s3 successfully");
+      // alert("File uploaded to s3 successfully");
     } catch (err) {
       alert("File upload to s3 failed");
       console.log(err);
     }
   };
   return (
-    <form onSubmit={onSubmit}>
-      Your Session Id: {apikey}
-      <div className="custom-file mb-4">
-        <input
-          type="text"
-          placeholder="workflow name"
-          onChange={(e) => setPolicyName(e.target.value)}
-        />
-      </div>
-      <div className="custom-file mb-4">
-        <input
-          type="file"
-          className="custom-file-input"
-          id="customFile"
-          onChange={(e) => onFileChange(e)}
-        />
-        {uploadingToOpswat ? <>uploading to OPSWAT for scanning...</> : <></>}
-        {uploadingToS3 ? <>uploading to S3 bucket...</> : <></>}
-        <label className="custom-file-label" htmlFor="customFile">
-          {scannedFile != null ? (
-            <>
-              <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                <div
-                  className={`bg-blue-600 h-2.5 rounded-full `}
-                  style={{ width: scannedFile.progress_percentage + "%" }}
-                ></div>
-                {scannedFile.progress_percentage}% {scannedFile.scan_result}
-              </div>
-            </>
-          ) : (
-            <></>
-          )}
-        </label>
-      </div>
-      <button type="submit" className="btn btn-primary">
-        Upload
-      </button>
-    </form>
+    <div>
+      <select onChange={(e) => setMode(e.target.value)}>
+        <option value="sync">Sync mode</option>
+        <option value="async">Async mode</option>
+      </select>
+      {/* Scan mode: {mode}
+      <br /> */}
+      <form onSubmit={mode == "sync" ? onSubmitSync : onSubmitAsync}>
+        Your Session Id: {apikey}
+        <div className="custom-file mb-4">
+          <input
+            type="text"
+            placeholder="workflow name"
+            onChange={(e) => setPolicyName(e.target.value)}
+          />
+        </div>
+        <div className="custom-file mb-4">
+          <input
+            type="file"
+            className="custom-file-input"
+            id="customFile"
+            onChange={(e) => onFileChange(e)}
+          />
+
+          {uploadingToOpswat ? <>uploading to OPSWAT for scanning...</> : <></>}
+          {uploadingToS3 ? <>uploading to S3 bucket...</> : <></>}
+          <label className="custom-file-label" htmlFor="customFile">
+            {scannedFile != null ? (
+              <>
+                <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                  <div
+                    className={`bg-blue-600 h-2.5 rounded-full `}
+                    style={{ width: scannedFile.progress_percentage + "%" }}
+                  ></div>
+                  {scannedFile.progress_percentage}% {scannedFile.scan_result}
+                </div>
+              </>
+            ) : (
+              <></>
+            )}
+          </label>
+        </div>
+        <button type="submit" className="btn btn-primary">
+          Upload
+        </button>
+      </form>
+    </div>
   );
 };
 
