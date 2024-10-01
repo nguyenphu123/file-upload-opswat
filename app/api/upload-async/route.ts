@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import fsPromises from "fs/promises";
 
 export async function POST(req: Request) {
   try {
