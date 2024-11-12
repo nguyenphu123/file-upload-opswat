@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     formData2.append("file", file);
     var uploadOptions: any = {
       method: "POST",
-      url: "http://172.16.2.104:8008/file/sync",
+      url: "http://172.16.2.130:8008/file/sync",
       headers: {
         "Content-Type": "application/octet-stream",
         apikey: apikey,
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
       json: true,
     };
     const uploadResponse = await fetch(
-      `http://172.16.2.104:8008/file/sync`,
+      `http://172.16.2.130:8008/file/sync`,
       uploadOptions
     );
     const uploadResult = await uploadResponse.json();

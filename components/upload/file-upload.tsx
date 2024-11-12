@@ -51,6 +51,8 @@ const FileUpload = () => {
           uploadingToS3 == false
         ) {
           uploadToS3Bucket();
+        } else {
+          alert("file is " + returnResult?.scan_results?.scan_all_result_a);
         }
       }
     }
@@ -100,7 +102,7 @@ const FileUpload = () => {
         setApikey(returnToken.session_id);
       } else {
         setAnalysisID(returnResult.data_id);
-        alert("File uploaded successfully");
+        alert("File upload to OPSWAT successfully");
       }
     } catch (err) {
       alert("File upload failed");
@@ -147,7 +149,12 @@ const FileUpload = () => {
         if (
           returnResult?.scan_results?.scan_all_result_a == "No Threat Detected"
         ) {
+          alert(
+            "File scanned successfully with no threat detected, uploading to file server"
+          );
           uploadToS3Bucket();
+        } else {
+          alert("file is " + returnResult?.scan_results?.scan_all_result_a);
         }
       }
     } catch (err) {
