@@ -1,5 +1,14 @@
 # Build Stage
 FROM node:20-alpine AS BUILD_IMAGE
+ARG HOST
+
+ENV HOST=${HOST}
+ARG API_KEY
+
+ENV API_KEY=${API_KEY}
+ARG PUBLIC_API_KEY
+
+ENV PUBLIC_API_KEY=${API_KEY}
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
