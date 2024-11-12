@@ -91,15 +91,15 @@ const FileUpload = () => {
       let returnResult = await data.json();
       setUploadingToOpswat(false);
       if (returnResult?.err != "" && returnResult?.err != undefined) {
-        alert(returnResult?.err);
-        const data = await fetch("/api/refreshToken", {
-          method: "POST",
-          body: JSON.stringify({
-            apikey: apikey,
-          }),
-        });
-        let returnToken = await data.json();
-        setApikey(returnToken.session_id);
+        // alert(returnResult?.err);
+        // const data = await fetch("/api/refreshToken", {
+        //   method: "POST",
+        //   body: JSON.stringify({
+        //     apikey: apikey,
+        //   }),
+        // });
+        // let returnToken = await data.json();
+        // setApikey(returnToken.session_id);
       } else {
         setAnalysisID(returnResult.data_id);
         alert("File upload to OPSWAT successfully");
@@ -136,15 +136,15 @@ const FileUpload = () => {
       let returnResult = await data.json();
       setUploadingToOpswat(false);
       if (returnResult?.err != "" && returnResult?.err != undefined) {
-        alert(returnResult?.err);
-        const data = await fetch("/api/refreshToken", {
-          method: "POST",
-          body: JSON.stringify({
-            apikey: apikey,
-          }),
-        });
-        let returnToken = await data.json();
-        setApikey(returnToken.session_id);
+        // alert(returnResult?.err);
+        // const data = await fetch("/api/refreshToken", {
+        //   method: "POST",
+        //   body: JSON.stringify({
+        //     apikey: apikey,
+        //   }),
+        // });
+        // let returnToken = await data.json();
+        // setApikey(returnToken.session_id);
       } else {
         if (
           returnResult?.scan_results?.scan_all_result_a == "No Threat Detected"
