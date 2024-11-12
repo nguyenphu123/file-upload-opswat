@@ -5,7 +5,7 @@ export async function POST(req: Request) {
     const formData = await req.formData();
     const file: any = formData.get("file"); // or what you need
     const workflow: any = formData.get("workflowName");
-    const apikey: any = formData.get("apikey");
+    // const apikey: any = formData.get("apikey");
     // var ruleOptions: any = {
     //   method: "POST",
     //   url: "http://172.16.2.104:8008/file/rules",
@@ -27,10 +27,10 @@ export async function POST(req: Request) {
     formData2.append("file", file);
     var uploadOptions: any = {
       method: "POST",
-      url: "http://172.16.2.130:8008/file",
+      url: "http://" + process.env.HOST + ":8008/file",
       headers: {
         "Content-Type": "application/octet-stream",
-        apikey: apikey,
+        apikey: process.env.API_KEY,
         filename: file.name,
         // filepath: "",
         // user_agent: "",
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
       json: true,
     };
     const uploadResponse = await fetch(
-      `http://172.16.2.130:8008/file`,
+      "http://" + process.env.HOST + ":8008/file",
       uploadOptions
     );
     const uploadResult = await uploadResponse.json();

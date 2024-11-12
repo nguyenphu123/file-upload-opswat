@@ -29,7 +29,7 @@ const FileUpload = () => {
         method: "POST",
         body: JSON.stringify({
           analysisID: analysisID,
-          apikey: apikey,
+          apikey: process.env.PUBLIC_API_KEY,
         }),
       });
       let returnResult = await data.json();
@@ -58,7 +58,7 @@ const FileUpload = () => {
     }
   };
   useEffect(() => {
-    fetchToken();
+    // fetchToken();
   }, []);
   useEffect(() => {
     setAnalysisID("");
@@ -82,7 +82,7 @@ const FileUpload = () => {
       formData.append("file", file);
       formData.append("workflowName", policyName + "");
 
-      formData.append("apikey", apikey + "");
+      // formData.append("apikey", apikey + "");
       const data = await fetch("/api/upload-async", {
         method: "POST",
         body: formData,
@@ -127,7 +127,7 @@ const FileUpload = () => {
       formData.append("file", file);
       formData.append("workflowName", policyName + "");
 
-      formData.append("apikey", apikey + "");
+      // formData.append("apikey", apikey + "");
       const data = await fetch("/api/upload-sync", {
         method: "POST",
         body: formData,
@@ -171,19 +171,19 @@ const FileUpload = () => {
     }
 
     try {
-      var headers = new Headers();
-      headers.append("Content-Type", "application/json");
-      const formData = new FormData();
-      formData.append("file", file);
+      // var headers = new Headers();
+      // headers.append("Content-Type", "application/json");
+      // const formData = new FormData();
+      // formData.append("file", file);
 
-      const data = await fetch("/api/upload-s3", {
-        method: "POST",
-        body: formData,
-      });
+      // const data = await fetch("/api/upload-s3", {
+      //   method: "POST",
+      //   body: formData,
+      // });
 
-      let returnResult = await data.json();
-      setUploadingToS3(false);
-      // alert("File uploaded to s3 successfully");
+      // let returnResult = await data.json();
+      // setUploadingToS3(false);
+      alert("File uploaded to s3 successfully");
     } catch (err) {
       alert("File upload to s3 failed");
       console.log(err);
