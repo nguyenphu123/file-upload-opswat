@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       method: "POST",
       url: "http://" + process.env.NEXT_PUBLIC_HOST + ":8008/file/sync",
       headers: {
-        // "Content-Type": "application/octet-stream",
+        "Content-Type": "application/octet-stream",
         apikey: process.env.NEXT_PUBLIC_API_KEY,
         filename: file.name,
         // filepath: "",
