@@ -50,7 +50,7 @@ const FileUpload = () => {
             "No Threat Detected" &&
           uploadingToS3 == false
         ) {
-          uploadToS3Bucket();
+          // uploadToS3Bucket();
         } else {
           alert("file is " + returnResult?.scan_results?.scan_all_result_a);
         }
@@ -65,7 +65,6 @@ const FileUpload = () => {
     /* it will be called when queues did update */
   }, [analysisID]);
   const onSubmitAsync = async (e: { preventDefault: () => void }) => {
-    setUploadingToOpswat(true);
     e.preventDefault();
     if (file == null) {
       alert("No file found");
@@ -75,9 +74,10 @@ const FileUpload = () => {
       alert("Please enter your workflow name");
       return;
     }
+    setUploadingToOpswat(true);
     try {
       var headers = new Headers();
-      headers.append("Content-Type", "application/json");
+      headers.append("Content-Type", "application/octet-stream");
       const formData = new FormData();
       formData.append("file", file);
       formData.append("workflowName", policyName + "");
@@ -85,6 +85,7 @@ const FileUpload = () => {
       // formData.append("apikey", apikey + "");
       const data = await fetch("/api/upload-async", {
         method: "POST",
+
         body: formData,
       });
 
@@ -110,7 +111,6 @@ const FileUpload = () => {
     }
   };
   const onSubmitSync = async (e: { preventDefault: () => void }) => {
-    setUploadingToOpswat(true);
     e.preventDefault();
     if (file == null) {
       alert("No file found");
@@ -120,6 +120,7 @@ const FileUpload = () => {
       alert("Please enter your workflow name");
       return;
     }
+    setUploadingToOpswat(true);
     try {
       var headers = new Headers();
       headers.append("Content-Type", "application/json");
@@ -130,6 +131,7 @@ const FileUpload = () => {
       // formData.append("apikey", apikey + "");
       const data = await fetch("/api/upload-sync", {
         method: "POST",
+
         body: formData,
       });
 
@@ -152,7 +154,7 @@ const FileUpload = () => {
           alert(
             "File scanned successfully with no threat detected, uploading to file server"
           );
-          uploadToS3Bucket();
+          // uploadToS3Bucket();
         } else {
           alert("file is " + returnResult?.scan_results?.scan_all_result_a);
         }
@@ -175,15 +177,13 @@ const FileUpload = () => {
       // headers.append("Content-Type", "application/json");
       // const formData = new FormData();
       // formData.append("file", file);
-
       // const data = await fetch("/api/upload-s3", {
       //   method: "POST",
       //   body: formData,
       // });
-
       // let returnResult = await data.json();
       // setUploadingToS3(false);
-      alert("File uploaded to s3 successfully");
+      // alert("File uploaded to s3 successfully");
     } catch (err) {
       alert("File upload to s3 failed");
       console.log(err);

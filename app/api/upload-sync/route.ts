@@ -23,19 +23,24 @@ export async function POST(req: Request) {
     //   ruleOptions
     // );
     // const ruleResult = await ruleResponse.json();
-    const formData2 = new FormData();
-    formData2.append("file", file);
+    const buffer = Buffer.from(await file.arrayBuffer());
     var uploadOptions: any = {
       method: "POST",
       url: "http://" + process.env.NEXT_PUBLIC_HOST + ":8008/file/sync",
       headers: {
-        "Content-Type": "application/octet-stream",
+        // "Content-Type": "application/octet-stream",
         apikey: process.env.NEXT_PUBLIC_API_KEY,
         filename: file.name,
         // filepath: "",
         // user_agent: "",
         // rule: "MetaDefender Vault",
-        workflow: workflow + " ",
+        rule: workflow + " ",
+        // "engines-metadata": {
+        //   file_type: {
+        //     "include_file_details.file_metadata": false,
+        //     "include_file_details.other_details": true,
+        //   },
+        // },
         // batch: "",
         // archivepwd: "echo",
         // metadata: "",
@@ -44,7 +49,7 @@ export async function POST(req: Request) {
         // downloadfrom: "{downloadfrom}",
         // "global-timeout": 60,
       },
-      body: formData2,
+      body: buffer,
       json: true,
     };
     const uploadResponse = await fetch(
