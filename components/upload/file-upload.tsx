@@ -18,11 +18,11 @@ const FileUpload = () => {
     setFile(e.target.files[0]);
     setFileName(e.target.files[0].name);
   };
-  const fetchToken = async () => {
-    let data = await fetch("/api/getToken");
-    let returnResult = await data.json();
-    setApikey(returnResult.session_id);
-  };
+  // const fetchToken = async () => {
+  //   let data = await fetch("/api/getToken");
+  //   let returnResult = await data.json();
+  //   setApikey(returnResult.session_id);
+  // };
   const getStatus = async () => {
     if (analysisID != "") {
       const data = await fetch("/api/getStatus", {
@@ -198,7 +198,7 @@ const FileUpload = () => {
       {/* Scan mode: {mode}
       <br /> */}
       <form onSubmit={mode == "sync" ? onSubmitSync : onSubmitAsync}>
-        Your Session Id: {process.env.NEXT_PUBLIC_API_KEY}
+        {/* Your Session Id: {process.env.NEXT_PUBLIC_API_KEY} */}
         <div className="custom-file mb-4">
           <input
             type="text"
