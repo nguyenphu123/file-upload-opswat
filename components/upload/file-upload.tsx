@@ -198,7 +198,8 @@ const FileUpload = () => {
       {/* Scan mode: {mode}
       <br /> */}
       <form onSubmit={mode == "sync" ? onSubmitSync : onSubmitAsync}>
-        {/* Your Session Id: {process.env.NEXT_PUBLIC_API_KEY} */}
+        {/* Your Session Id: {process.env.NEXT_PUBLIC_API_KEY}
+        Your OPSWAT IP: {process.env.NEXT_PUBLIC_HOST} */}
         <div className="custom-file mb-4">
           <input
             type="text"
