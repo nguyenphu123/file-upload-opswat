@@ -29,7 +29,7 @@ const FileUpload = () => {
         method: "POST",
         body: JSON.stringify({
           analysisID: analysisID,
-          apikey: process.env.PUBLIC_API_KEY,
+          apikey: process.env.NEXT_PUBLIC_API_KEY,
         }),
       });
       let returnResult = await data.json();
@@ -198,7 +198,7 @@ const FileUpload = () => {
       {/* Scan mode: {mode}
       <br /> */}
       <form onSubmit={mode == "sync" ? onSubmitSync : onSubmitAsync}>
-        Your Session Id: {apikey}
+        Your Session Id: {process.env.NEXT_PUBLIC_API_KEY}
         <div className="custom-file mb-4">
           <input
             type="text"

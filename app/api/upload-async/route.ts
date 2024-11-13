@@ -27,10 +27,10 @@ export async function POST(req: Request) {
     formData2.append("file", file);
     var uploadOptions: any = {
       method: "POST",
-      url: "http://" + process.env.HOST + ":8008/file",
+      url: "http://" + process.env.NEXT_PUBLIC_HOST + ":8008/file",
       headers: {
         "Content-Type": "application/octet-stream",
-        apikey: process.env.API_KEY,
+        apikey: process.env.NEXT_PUBLIC_API_KEY,
         filename: file.name,
         // filepath: "",
         // user_agent: "",
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
       json: true,
     };
     const uploadResponse = await fetch(
-      "http://" + process.env.HOST + ":8008/file",
+      "http://" + process.env.NEXT_PUBLIC_HOST + ":8008/file",
       uploadOptions
     );
     const uploadResult = await uploadResponse.json();
